@@ -1955,11 +1955,7 @@ oBrowser = function(name) {
                         g++;
 						this.groups[g-1].date = arr[2];
 						if(properties.tagMode==1){
-							if(default_grouping){
-								var artist_album = arr[0].split(" ^^ ");
-							} else {
-								var artist_album = arr[3].split(" ^^ ");
-							}
+							var artist_album = arr[default_grouping ? 0 : 3].split(" ^^ ");
 							this.groups[g-1].artist_name = artist_album[0];
 							this.groups[g-1].album = artist_album[1];
 						}
@@ -2706,23 +2702,27 @@ oBrowser = function(name) {
 											gr.GdiDrawText(""+(total-1)+" items", g_font.italicmin1, txt_color2, ax + Math.round((aw - coverWidth) / 2), (coverTop + 5 + coverWidth + this.firstRowHeight), coverWidth, this.secondRowHeight, DT_CENTER | DT_TOP | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
 										} catch(e) {console.log(e)}
 									} else {
+										var album_name = this.groups[i].album;
 										if(!this.customGroups){
-											if(this.groups[i].album == "?") {
-												if(this.groups[i].count > 1) {
-													var album_name = (this.groups[i].tracktype != 3 ? "(Singles)" : "(Web Radios)");
-												} else {
-													var arr_t = this.groups[i].tra[0].split(" ^^ ");
-													var album_name = (this.groups[i].tracktype != 3 ? "(Single) " : "") + arr_t[0];
-												};
-											} else {
-												var album_name = this.groups[i].album;
-											};
-											this.groups[i].firstRow = album_name;
 											this.groups[i].secondRow = this.groups[i].artist_name;
 										} else {
-											this.groups[i].firstRow = this.groups[i].groupkey;
-											this.groups[i].secondRow = this.groups[i].count+" item"+(this.groups[i].count>1?'s':'');
+											var arr_t = this.groups[i].groupkey.split(" ^^ ");
+											album_name = arr_t.pop();
+											this.groups[i].secondRow = arr_t.length > 0 ? arr_t.pop() : this.groups[i].count+" item"+(this.groups[i].count>1?'s':'');
 										}
+										
+										if(album_name == "?") {
+											if(this.groups[i].count > 1) {
+												album_name = (this.groups[i].tracktype != 3 ? "(Singles)" : "(Web Radios)");
+											} else {
+												album_name = this.groups[i].tra[0].split(" ^^ ")[0];
+												if (this.groups[i].tracktype != 3 && album_name.length > 0)
+												album_name = album_name + " (Single)";
+											};
+										} else {
+											album_name = this.groups[i].album;
+										};
+										this.groups[i].firstRow = album_name;
 
 										try{
 											if(properties.tagMode == 1) {
@@ -2766,8 +2766,23 @@ oBrowser = function(name) {
 											this.groups[i].firstRow = album_name;
 											this.groups[i].secondRow = this.groups[i].artist_name;
 										} else {
-											this.groups[i].firstRow = this.groups[i].groupkey;
-											this.groups[i].secondRow = this.groups[i].count+" item"+(this.groups[i].count>1?'s':'');
+											var arr_t = this.groups[i].groupkey.split(" ^^ ");
+
+											var album_name = arr_t.pop();
+											if(album_name == "?") {
+												if(this.groups[i].count > 1) {
+													album_name = (this.groups[i].tracktype != 3 ? "(Singles)" : "(Web Radios)");
+												} else {
+													album_name = this.groups[i].tra[0].split(" ^^ ")[0];
+													if (this.groups[i].tracktype != 3 && album_name.length > 0)
+													album_name = album_name + " (Single)";
+												};
+											} else {
+												album_name = this.groups[i].album;
+											};
+											this.groups[i].firstRow = album_name;
+
+											this.groups[i].secondRow = arr_t.length > 0 ? arr_t.pop() : this.groups[i].count+" item"+(this.groups[i].count>1?'s':'');
 										}
 									};
 									try{
@@ -2923,8 +2938,22 @@ oBrowser = function(name) {
 												this.groups[i].firstRow = album_name+date;
 												this.groups[i].secondRow = this.groups[i].artist_name;
 											} else {
-												this.groups[i].firstRow = this.groups[i].groupkey;
-												this.groups[i].secondRow = this.groups[i].count+" item"+(this.groups[i].count>1?'s':'');
+												var arr_t = this.groups[i].groupkey.split(" ^^ ");
+												
+												var album_name = arr_t.pop();
+												if(album_name == "?") {
+													if(this.groups[i].count > 1) {
+														album_name = (this.groups[i].tracktype != 3 ? "(Singles)" : "(Web Radios)");
+													} else {
+														album_name = this.groups[i].tra[0].split(" ^^ ")[0];
+														if (this.groups[i].tracktype != 3 && album_name.length > 0)
+														album_name = album_name + " (Single)";
+													};
+												} else {
+													album_name = this.groups[i].album;
+												};
+												this.groups[i].firstRow = album_name;
+												this.groups[i].secondRow = arr_t.length > 0 ? arr_t.pop() : this.groups[i].count+" item"+(this.groups[i].count>1?'s':'');
 											}
 											try{
 												this.groups[i].tooltipText = this.groups[i].firstRow+'\n'+this.groups[i].secondRow;
